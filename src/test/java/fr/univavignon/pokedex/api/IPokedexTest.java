@@ -13,95 +13,105 @@ import static org.mockito.Mockito.when;
 public class IPokedexTest {
 
     // Mocks pour IPokedex et ses dépendances
-    IPokedex iPokedex;
-    IPokemonFactory iPokemonFactory;
-    IPokemonMetadataProvider iPokemonMetadataProvider;
+    private IPokedex pokedexMock;
+    private IPokemonFactory pokemonFactoryMock;
+    private IPokemonMetadataProvider metadataProviderMock;
+
+    // Pokémon utilisés dans plusieurs tests
+    private Pokemon bulbizarre, aquali;
 
     @Before
     public void setUp() {
         // Initialisation des mocks avec Mockito
-        iPokedex = mock(IPokedex.class);
-        iPokemonFactory = mock(IPokemonFactory.class);
-        iPokemonMetadataProvider = mock(IPokemonMetadataProvider.class);
+        pokedexMock = mock(IPokedex.class);
+        pokemonFactoryMock = mock(IPokemonFactory.class);
+        metadataProviderMock = mock(IPokemonMetadataProvider.class);
+
+        // Initialisation des objets Pokémon
+        bulbizarre = new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56);
+        aquali = new Pokemon(133, "Aquali", 186, 168, 260, 2729, 202, 5000, 4, 100);
     }
 
     // Test pour vérifier la taille du Pokedex
     @Test
     public void testSize() {
-        when(iPokedex.size()).thenReturn(2); // Simule la taille du Pokédex
-        assertEquals(2, iPokedex.size());    // Vérifie que la taille est correcte
+        when(pokedexMock.size()).thenReturn(2); // Simuler la taille du Pokédex
+        assertEquals(2, pokedexMock.size());    // Vérifier que la taille est correcte
     }
 
     // Test pour l'ajout de Pokémon au Pokédex
     @Test
     public void testAddPokemon() {
-        Pokemon pok1 = new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56);
-        Pokemon pok2 = new Pokemon(133, "Aquali", 186, 168, 260, 2729, 202, 5000, 4, 100);
-
         // Simuler l'ajout de Pokémon et vérifier les indices retournés
-        when(iPokedex.addPokemon(pok1)).thenReturn(pok1.getIndex());
-        when(iPokedex.addPokemon(pok2)).thenReturn(pok2.getIndex());
+        when(pokedexMock.addPokemon(bulbizarre)).thenReturn(bulbizarre.getIndex());
+        when(pokedexMock.addPokemon(aquali)).thenReturn(aquali.getIndex());
 
-        assertEquals(0, iPokedex.addPokemon(pok1));
-        assertEquals(133, iPokedex.addPokemon(pok2));
+        assertEquals(0, pokedexMock.addPokemon(bulbizarre));
+        assertEquals(133, pokedexMock.addPokemon(aquali));
     }
 
     // Test pour vérifier la récupération d'un Pokémon à partir de l'index
     @Test
     public void testGetPokemon() throws PokedexException {
-        Pokemon pok1 = new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56);
+        when(pokedexMock.getPokemon(0)).thenReturn(bulbizarre);  // Simuler la récupération d'un Pokémon
 
-        when(iPokedex.getPokemon(0)).thenReturn(pok1);  // Simuler la récupération d'un Pokémon
-
-        Pokemon result = iPokedex.getPokemon(0);  // Vérifier la récupération
+        Pokemon result = pokedexMock.getPokemon(0);  // Vérifier la récupération
         assertNotNull(result);
-        assertEquals(pok1, result);
+        assertEquals(bulbizarre, result);
     }
 
     // Test pour récupérer tous les Pokémon
     @Test
     public void testGetPokemons() {
-        Pokemon pok1 = new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56);
-        Pokemon pok2 = new Pokemon(133, "Aquali", 186, 168, 260, 2729, 202, 5000, 4, 100);
         List<Pokemon> pokemonList = new ArrayList<>();
-        pokemonList.add(pok1);
-        pokemonList.add(pok2);
+        pokemonList.add(bulbizarre);
+        pokemonList.add(aquali);
 
-        when(iPokedex.getPokemons()).thenReturn(pokemonList); // Simuler la liste de Pokémon
+        when(pokedexMock.getPokemons()).thenReturn(pokemonList); // Simuler la liste de Pokémon
 
-        List<Pokemon> result = iPokedex.getPokemons();  // Vérifier la récupération
+        List<Pokemon> result = pokedexMock.getPokemons();  // Vérifier la récupération
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(pokemonList, result);
     }
 
-    // Test pour la création d'un Pokémon via iPokemonFactory
+    // Test pour la création d'un Pokémon via IPokemonFactory
     @Test
     public void testCreatePokemon() {
-        Pokemon pok1 = new Pokemon(0, "Bulbizarre", 126, 126, 90, 613, 64, 4000, 4, 56);
-
         // Simuler la création d'un Pokémon
-        when(iPokemonFactory.createPokemon(0, 613, 64, 4000, 4))
-            .thenReturn(pok1);
+        when(pokemonFactoryMock.createPokemon(0, 613, 64, 4000, 4)).thenReturn(bulbizarre);
 
-        Pokemon createdPokemon = iPokemonFactory.createPokemon(0, 613, 64, 4000, 4);  // Vérifier la création
+        Pokemon createdPokemon = pokemonFactoryMock.createPokemon(0, 613, 64, 4000, 4);  // Vérifier la création
+        assertNotNull(createdPokemon);
         assertEquals("Bulbizarre", createdPokemon.getName());
         assertEquals(613, createdPokemon.getCp());
         assertEquals(64, createdPokemon.getHp());
     }
 
-    // Test pour récupérer les métadonnées d'un Pokémon via iPokemonMetadataProvider
+    // Test pour récupérer les métadonnées d'un Pokémon via IPokemonMetadataProvider
     @Test
     public void testGetPokemonMetadata() throws PokedexException {
         PokemonMetadata bulbizarreMetadata = new PokemonMetadata(0, "Bulbizarre", 126, 126, 90);
 
         // Simuler la récupération des métadonnées
-        when(iPokemonMetadataProvider.getPokemonMetadata(0))
-            .thenReturn(bulbizarreMetadata);
+        when(metadataProviderMock.getPokemonMetadata(0)).thenReturn(bulbizarreMetadata);
 
-        PokemonMetadata metadata = iPokemonMetadataProvider.getPokemonMetadata(0);  // Vérifier les métadonnées
+        PokemonMetadata metadata = metadataProviderMock.getPokemonMetadata(0);  // Vérifier les métadonnées
+        assertNotNull(metadata);
         assertEquals("Bulbizarre", metadata.getName());
         assertEquals(126, metadata.getAttack());
         assertEquals(126, metadata.getDefense());
+        assertEquals(90, metadata.getStamina());
+    }
+
+    // Test pour vérifier les Pokémon triés par comparateurs (exemple d'utilisation avec INDEX)
+    @Test
+    public void testGetPokemonsWithComparator() {
+        List<Pokemon> sortedByIndex = List.of(bulbizarre, aquali);
+        when(pokedexMock.getPokemons(PokemonComparators.INDEX)).thenReturn(sortedByIndex);
+
+        List<Pokemon> result = pokedexMock.getPokemons(PokemonComparators.INDEX);  // Vérifier le tri par index
+        assertNotNull(result);
+        assertEquals(sortedByIndex, result);
     }
 }
