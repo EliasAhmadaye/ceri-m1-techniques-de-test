@@ -23,31 +23,31 @@ public class IPokemonTrainerFactoryTest {
         mockPokedex = mock(IPokedex.class);
 
         // Créer une instance de PokemonTrainer pour le mock
-        trainer = new PokemonTrainer("Killian", Team.INSTINCT, mockPokedex);
+        trainer = new PokemonTrainer("Abdel", Team.INSTINCT, mockPokedex);
 
         // Configurer le mock pour renvoyer un dresseur (trainer) quand createTrainer est appelé
-        when(mockPokemonTrainerFactory.createTrainer("Killian", Team.INSTINCT, mockPokedexFactory))
+        when(mockPokemonTrainerFactory.createTrainer("Abdel", Team.INSTINCT, mockPokedexFactory))
             .thenReturn(trainer);
     }
 
     // Test pour vérifier le nom du dresseur
     @Test
     public void testCreateTrainer() {
-        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Killian", Team.INSTINCT, mockPokedexFactory);
-        assertEquals("Killian", createdTrainer.getName());
+        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Abdel", Team.INSTINCT, mockPokedexFactory);
+        assertEquals("Abdel", createdTrainer.getName());
     }
 
     // Test pour vérifier l'équipe du dresseur
     @Test
     public void testCreateTrainerGetTeam() {
-        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Killian", Team.INSTINCT, mockPokedexFactory);
+        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Abdel", Team.INSTINCT, mockPokedexFactory);
         assertEquals(Team.INSTINCT, createdTrainer.getTeam());
     }
 
     // Test pour vérifier que le Pokédex du dresseur n'est pas nul
     @Test
     public void testCreateTrainerGetPokedex() {
-        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Killian", Team.INSTINCT, mockPokedexFactory);
+        PokemonTrainer createdTrainer = mockPokemonTrainerFactory.createTrainer("Abdel", Team.INSTINCT, mockPokedexFactory);
         assertNotNull(createdTrainer.getPokedex());
     }
 }
