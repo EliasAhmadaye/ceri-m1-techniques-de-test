@@ -1,9 +1,13 @@
+
 version: 2.1
+
+orbs:
+  codecov: codecov/codecov@4.0.1
 
 executors:
   maven-executor:
     docker:
-      - image: maven:3.8.4-openjdk-17  # Utilisation d'une image avec Maven et OpenJDK 11
+      - image: maven:3.8.4-openjdk-17  # Utilisation d'une image avec Maven et OpenJDK 17
 
 jobs:
   build:
@@ -11,8 +15,21 @@ jobs:
     steps:
       - checkout  # Vérifier le code source
       - run:
+          name: Build with Maven
+          command: mvn clean install
+      - run:
           name: Run Maven tests
           command: mvn test  # Exécuter les tests unitaires avec Maven
+      - run:
+          name: Run Maven coverage
+          command: mvn jacoco:report
+
+  upload_to_codecov:
+    executor: maven-executor
+    steps:
+      - run:
+          name: Upload to codecov
+          command: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
 
 workflows:
   version: 2
@@ -23,3 +40,4 @@ workflows:
             branches:
               only:
                 - master
+      - upload_to_codecov
